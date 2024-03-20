@@ -28,3 +28,8 @@ Route::get('/my-name/{param}',function($name) {
 Route::get('/my-city/{city?}',function($city = " Bandung") {
     echo " Kota saya adalah " . $city;
 });
+
+Route::get('/get-student/{name?}/{$nrp?}',function($name = " nama ", $code = "220414010") {
+    echo " Nama saya  " . $name;
+    echo " NRP saya  " . $code;
+});
