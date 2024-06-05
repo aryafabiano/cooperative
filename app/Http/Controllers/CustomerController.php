@@ -6,21 +6,28 @@ use Illuminate\Http\Request;
 
 class CustomerController extends Controller
 {
-    public function index() {
-        echo "Alamat saya di bandung";
+    public function create() {
+        return view('customer.create');
 
     }
+    public function store(Request $request) {
+        $this->validate($request, [
+            'code' => 'required|unique:customer|max:4',
+            'name' => 'required|max:30',
+            'phone' => 'max:15',
+            'address' => 'required',
+        ]);
 
-    public function getName($name) {
-        echo " Nama saya adalah ". $name;
-    }
+        $customer =new Customer();
+        $Cusotmer->code = $request->code;
+        $Cusotmer->name = $request->name;
+        $Cusotmer->phone = $request->phone;
+        $Cusotmer->address = $request->address;
 
-    public function city($city) {
-        echo " Kota saya adalah ". $city;
-    }
-
-    public function getStudent($name = " Arya Fabiano Siregar Kapal lawt ", $code = "220414010") {
-        echo " Nama saya  " . $name;
-        echo " NRP saya  " . $code;
+        if($customer->save()) {
+            dd("Data Berhasil di Simpan");
+        } else {
+            dd("Data Gagal di Simpan");
+        }
     }
 }

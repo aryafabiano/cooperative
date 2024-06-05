@@ -22,7 +22,8 @@ Route::get('/home', function() {
     echo "Alamat saya di bandung";
 });
 
-Route::get('/nasabah/index', [CustomerController::class, 'index']);    
+Route::get('/customer/create', [CustomerController::class, 'create'])->name('customer.create');    
+Route::post('/customer/store', [CustomerController::class, 'store'])->name('customer.store');    
 
 
 
