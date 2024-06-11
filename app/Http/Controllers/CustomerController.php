@@ -25,9 +25,21 @@ class CustomerController extends Controller
         $Cusotmer->address = $request->address;
 
         if($customer->save()) {
-            dd("Data Berhasil di Simpan");
+            return redirect()->route('customer.show', $customer->id);
         } else {
             dd("Data Gagal di Simpan");
         }
+    }
+
+    public function show($id) {
+        $customer = Customer::find($id);
+
+        return view('customers.show', compact('customer'));
+    }
+
+    public function index() {
+        $customers = Customer::all();
+
+        return view('customers.index', compact('customers'));
     }
 }
