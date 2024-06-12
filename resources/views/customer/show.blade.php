@@ -1,7 +1,7 @@
 @extends('layouts.main')
 
 @section('content')
-    
+
     <div class='mb-2'>
         <h1>Data Nasabah</h1>
         <table class="table">
@@ -11,7 +11,7 @@
             </tr>
             <tr>
                 <th>Nama Nasabah</th>
-                <td>: {{ $customer->Name }}</td>
+                <td>: {{ $customer->name }}</td>
             </tr>
             <tr>
                 <th>Alamat Nasabah</th>

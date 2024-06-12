@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
+use App\Models\Customer;
 class CustomerController extends Controller
 {
     public function create() {
@@ -12,17 +12,17 @@ class CustomerController extends Controller
     }
     public function store(Request $request) {
         $this->validate($request, [
-            'code' => 'required|unique:customer|max:4',
+            'code' => 'required|max:4',
             'name' => 'required|max:30',
             'phone' => 'max:15',
             'address' => 'required',
         ]);
 
         $customer =new Customer();
-        $Cusotmer->code = $request->code;
-        $Cusotmer->name = $request->name;
-        $Cusotmer->phone = $request->phone;
-        $Cusotmer->address = $request->address;
+        $customer->code = $request->code;
+        $customer->name = $request->name;
+        $customer->phone = $request->phone;
+        $customer->address = $request->address;
 
         if($customer->save()) {
             return redirect()->route('customer.show', $customer->id);
@@ -34,12 +34,48 @@ class CustomerController extends Controller
     public function show($id) {
         $customer = Customer::find($id);
 
-        return view('customers.show', compact('customer'));
+        return view('customer.show', compact('customer'));
     }
 
     public function index() {
         $customers = Customer::all();
 
-        return view('customers.index', compact('customers'));
+        return view('customer.index', compact('customers'));
+    }
+
+    public function edit ($id){
+        $customer = Customer::find($id);
+
+        return view('customer.edit', compact('customer'));
+    }
+
+
+    public function update (Request $request){
+        $this->validate($request, [
+            'name' => 'required|max:30',
+            'phone' => 'max:15',
+            'address' => 'required',
+        ]);
+
+        $customer =Customer::find($request->id);
+        $customer->name = $request->name;
+        $customer->phone = $request->phone;
+        $customer->address = $request->address;
+
+        if($customer->save()) {
+            return redirect()->route('customer.index')->with('succes', 'Data Berhasil Disimpan');
+        } else {
+            dd("Data Gagal di Simpan");
+        }
+    }
+
+    public function destroy ($id)
+    {
+        $customer = Customer::find($id);
+        if($customer->delete()) {
+        return redirect()->route('customer.index')->with('success', 'Data Berhasil Dihapus');
+    } else {
+        dd("data gagal dihapus");
+        }
     }
 }
