@@ -1,1 +1,1 @@
-<h3>Hallo {{ $name }}</h3>
+Hallo nama saya {{ $name }}

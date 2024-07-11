@@ -1,81 +1,94 @@
 <?php
 
 namespace App\Http\Controllers;
-
-use Illuminate\Http\Request;
 use App\Models\Customer;
+use App\Models\MandatorySaving; 
+use Illuminate\Http\Request;
+
 class CustomerController extends Controller
 {
-    public function create() {
-        return view('customer.create');
-
+    public function create(){
+        return view('customers.create');
     }
+
     public function store(Request $request) {
         $this->validate($request, [
-            'code' => 'required|max:4',
+            'code' => 'required|unique:customers|max:4',
             'name' => 'required|max:30',
-            'phone' => 'max:15',
             'address' => 'required',
+            'phone' => 'numeric'
         ]);
-
-        $customer =new Customer();
+        $customer = new Customer();
         $customer->code = $request->code;
         $customer->name = $request->name;
         $customer->phone = $request->phone;
         $customer->address = $request->address;
 
-        if($customer->save()) {
+        if($customer->save()) { 
             return redirect()->route('customer.show', $customer->id);
         } else {
-            dd("Data Gagal di Simpan");
+            dd('Data Gagal Disimpan!!!');
         }
-    }
 
+    }
     public function show($id) {
+        // SELECT * FROM customers where id = x
         $customer = Customer::find($id);
 
-        return view('customer.show', compact('customer'));
+        
+        return view('customers.show', compact('customer'));
     }
 
     public function index() {
-        $customers = Customer::all();
+        // SELECT * FROM customers
 
-        return view('customer.index', compact('customers'));
+        //$customers = Customer::all();
+        $customers = Customer::orderBy('id', 'DESC')->get();
+        
+        return view('customers.index', compact('customers'));
     }
 
-    public function edit ($id){
+    // method untuk mengambil data yang diubah
+    public function edit($id) {
         $customer = Customer::find($id);
 
-        return view('customer.edit', compact('customer'));
+        return view('customers.edit', compact('customer'));
     }
-
-
-    public function update (Request $request){
+    // method untuk menyimpan data yang diubah
+    public function update(Request $request) {
         $this->validate($request, [
             'name' => 'required|max:30',
-            'phone' => 'max:15',
             'address' => 'required',
+            'phone' => 'numeric'
         ]);
-
-        $customer =Customer::find($request->id);
+        $customer = Customer::find($request->id);
         $customer->name = $request->name;
         $customer->phone = $request->phone;
         $customer->address = $request->address;
 
-        if($customer->save()) {
-            return redirect()->route('customer.index')->with('succes', 'Data Berhasil Disimpan');
+        if($customer->save()) { 
+            return redirect()->route('customer.index')->with('sucsess', "Data Nasabah $customer->code Berhasil di Perbarui");
         } else {
-            dd("Data Gagal di Simpan");
+            dd('Data Gagal Disimpan!!!');
         }
-    }
 
-    public function destroy ($id)
-    {
+    }
+    // method untuk hapus data
+    public function destroy($id) {
         $customer = Customer::find($id);
-        if($customer->delete()) {
-        return redirect()->route('customer.index')->with('success', 'Data Berhasil Dihapus');
-    } else {
-        dd("data gagal dihapus");
+
+        if ($customer) {
+            // Delete related mandatory savings
+            MandatorySaving::where('customer_id', $id)->delete();
+
+            // Delete the customer
+            if ($customer->delete()) {
+                return redirect()->route('customer.index')->with('success', 'Data Berhasil Dihapus');
+            } else {
+                return redirect()->route('customer.index')->with('error', 'Data Gagal Dihapus');
+            }
+        } else {
+            return redirect()->route('customer.index')->with('error', 'Data Tidak Ditemukan');
         }
     }
 }
